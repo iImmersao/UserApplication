@@ -1,5 +1,6 @@
 package com.iimmersao.userapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.iimmersao.springmimic.annotations.Column;
 import com.iimmersao.springmimic.annotations.GeneratedValue;
 import com.iimmersao.springmimic.annotations.Id;
@@ -8,6 +9,7 @@ public class MongoUser {
     @Id
     @GeneratedValue
     @Column(name = "id")
+    @JsonProperty("_id")
     private String id;
 
     @Column(name = "username")

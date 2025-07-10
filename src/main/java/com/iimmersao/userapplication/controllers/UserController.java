@@ -42,16 +42,18 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public String createUser(@RequestBody User user) {
-        User createdUser = userService.save(user);
-        return "User created with ID: " + createdUser.getId();
+    public User createUser(@RequestBody User user) {
+        return userService.save(user);
     }
 
     @GetMapping("/users/{id}")
-    public String getUserById(@PathVariable("id") String id) {
+    public User getUserById(@PathVariable("id") String id) {
+        User result = null;
         Optional<User> user = userService.findById(id);
-        return user.map(u -> "User: " + u.getUsername())
-                .orElse("User not found");
+        if (user.isPresent()) {
+            result = user.get();
+        }
+        return result;
     }
 
     @GetMapping("/users")
@@ -107,9 +109,23 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public String patchUser(@PathVariable("id") String id, @RequestBody User updated) {
-        updated.setId(id);
-        userService.update(updated);
+    public String patchUser(@PathVariable("id") String id, @RequestBody User patch) {
+        Optional<User> existingOpt = userService.findById(id);
+        if (existingOpt.isEmpty()) {
+            return "User not found";
+        }
+
+        User existing = existingOpt.get();
+
+        // Manually merge fields — or use a helper method
+        if (patch.getUsername() != null) {
+            existing.setUsername(patch.getUsername());
+        }
+        if (patch.getEmail() != null) {
+            existing.setEmail(patch.getEmail());
+        }
+
+        userService.update(existing);
         return "User patched with ID: " + id;
     }
 

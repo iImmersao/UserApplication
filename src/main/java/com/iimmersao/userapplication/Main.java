@@ -13,4 +13,5 @@ import org.slf4j.LoggerFactory;
     public static void main(String[] args) {
         SpringMimicApplicationRunner.run(Main.class);
     }
+
 }

@@ -13,8 +13,14 @@ public class UserMapper {
     }
 
     public static Object toEntity(User dto, String dbType) {
-        if ("mysql".equalsIgnoreCase(dbType) || "h2".equalsIgnoreCase(dbType)) {
+        if ("mysql".equalsIgnoreCase(dbType)) {
             MySqlUser user = new MySqlUser();
+            if (dto.getId() != null) user.setId(Integer.parseInt(dto.getId()));
+            user.setUsername(dto.getUsername());
+            user.setEmail(dto.getEmail());
+            return user;
+        } else if ("h2".equalsIgnoreCase(dbType)) {
+            H2User user = new H2User();
             if (dto.getId() != null) user.setId(Integer.parseInt(dto.getId()));
             user.setUsername(dto.getUsername());
             user.setEmail(dto.getEmail());
