@@ -42,6 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    @ResponseBody
     public User createUser(@RequestBody User user) {
         return userService.save(user);
     }
@@ -56,7 +57,10 @@ public class UserController {
         return result;
     }
 
+    //@GetMapping("/users/email/{address}")
+
     @GetMapping("/users")
+    @ResponseBody
     public List<User> getUsers(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,

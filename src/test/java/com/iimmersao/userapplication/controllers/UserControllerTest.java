@@ -5,7 +5,10 @@ import com.iimmersao.userapplication.Main;
 import com.iimmersao.userapplication.models.User;
 import org.junit.jupiter.api.*;
 
+import java.net.http.HttpHeaders;
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Map;
 
 import static com.iimmersao.userapplication.utils.HttpTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -130,9 +133,11 @@ public class UserControllerTest {
         assertEquals(200, response.statusCode());
 
         String responseJson = response.body(); // e.g. from HTTP client
-        User user = objectMapper.readValue(responseJson, User.class);
-
-        assertNull(user);
+        HttpHeaders headers = response.headers();
+        Map<String, List<String>> headerFields = headers.map();
+        List<String> field = headerFields.get("content-type");
+        assertEquals("text/plain", field.getFirst());
+        assertEquals("", responseJson);
     }
 
     @Test
