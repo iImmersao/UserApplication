@@ -1,16 +1,14 @@
 package com.iimmersao.userapplication.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.iimmersao.springmimic.annotations.Column;
-import com.iimmersao.springmimic.annotations.GeneratedValue;
-import com.iimmersao.springmimic.annotations.Id;
+import com.iimmersao.springmimic.annotations.*;
 
-public class MongoUser {
+@Entity
+@Table(name = "users")
+public class MySqlUserEntity implements BaseUserEntity<Integer> {
     @Id
     @GeneratedValue
     @Column(name = "id")
-    @JsonProperty("_id")
-    private String id;
+    private Integer id;
 
     @Column(name = "username")
     private String username;
@@ -18,16 +16,22 @@ public class MongoUser {
     @Column(name = "email")
     private String email;
 
-    public MongoUser() {}
+    public MySqlUserEntity() {}
 
-    public MongoUser(String username, String email) {
+    public MySqlUserEntity(String username, String email) {
         this.username = username;
         this.email = email;
     }
 
     // Getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Integer getId() { return id; }
+
+    @Override
+    public void setId(Integer integer) {
+
+    }
+
+    public void setId(int id) { this.id = id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -37,6 +41,6 @@ public class MongoUser {
 
     @Override
     public String toString() {
-        return String.format("User{id=%s, username='%s', email='%s'}", id, username, email);
+        return String.format("User{id=%d, username='%s', email='%s'}", id, username, email);
     }
 }

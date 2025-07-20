@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class H2User {
+public class H2UserEntity implements BaseUserEntity<Integer> {
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -18,10 +18,10 @@ public class H2User {
     @Column(name = "email")
     private String email;
 
-    public H2User() {
+    public H2UserEntity() {
     }
 
-    public H2User(Integer id, String username, String email, Boolean active, Integer age) {
+    public H2UserEntity(Integer id, String username, String email, Boolean active, Integer age) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -60,7 +60,7 @@ public class H2User {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof H2User h2User)) return false;
+        if (!(o instanceof H2UserEntity h2User)) return false;
         return Objects.equals(id, h2User.id)
                 && Objects.equals(username, h2User.username)
                 && Objects.equals(email, h2User.email);

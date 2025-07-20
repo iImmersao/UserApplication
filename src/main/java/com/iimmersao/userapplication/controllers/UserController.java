@@ -14,8 +14,6 @@ import fi.iki.elonen.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
 @Controller
 public class UserController {
 
