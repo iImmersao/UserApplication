@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest {
 
-    private static final int PORT = 8081;
+    private static final int PORT = 8082;
     private static final String BASE_URL = "http://localhost:" + PORT;
 
     private static String createdUserId;
