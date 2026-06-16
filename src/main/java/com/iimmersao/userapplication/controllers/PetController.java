@@ -1,34 +1,42 @@
 package com.iimmersao.userapplication.controllers;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.iimmersao.springmimic.annotations.*;
 import com.iimmersao.springmimic.client.RestClient;
 import com.iimmersao.springmimic.web.PageRequest;
-import com.iimmersao.userapplication.models.User;
+import com.iimmersao.userapplication.models.Pet;
+import com.iimmersao.userapplication.models.PetUser;
+import com.iimmersao.userapplication.services.CombinedService;
+import com.iimmersao.userapplication.services.PetService;
 import com.iimmersao.userapplication.services.UserService;
 import fi.iki.elonen.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Controller
-public class UserController {
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+@RestController
+public class PetController {
+    private static final Logger log = LoggerFactory.getLogger(PetController.class);
 
     @Inject
     RestClient restClient;
 
     @Inject
+    private PetService petService;
+
+    @Inject
     private UserService userService;
+
+    @Autowired
+    private CombinedService combinedService;
 
     @GetMapping("/external")
     public String callExternalService() throws Exception {
         // For example, proxying a public JSON API
-        Post post = restClient.get("https://jsonplaceholder.typicode.com/posts/1", Post.class);
+        PetController.Post post = restClient.get("https://jsonplaceholder.typicode.com/posts/1", PetController.Post.class);
         return "Fetched post: " + post.title;
     }
 
@@ -39,27 +47,34 @@ public class UserController {
         public String body;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/pets")
     @ResponseBody
-    public User createUser(@RequestBody User user) {
-        return userService.save(user);
+    public Pet createPet(@RequestBody Pet pet) {
+        return petService.save(pet);
     }
 
-    @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable("id") String id) {
-        User result = null;
-        Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            result = user.get();
+    @PostMapping("/petusers")
+    @ResponseBody
+    public Pet createPetAndUser(@RequestBody PetUser petuser) {
+        combinedService.createPetAndUser(petuser.getPet(), petuser.getUser());
+        return petuser.getPet();
+    }
+
+    @GetMapping("/pets/{id}")
+    public Pet getPetById(@PathVariable("id") String id) {
+        Pet result = null;
+        Optional<Pet> pet = petService.findById(id);
+        if (pet.isPresent()) {
+            result = pet.get();
         }
         return result;
     }
 
     //@GetMapping("/users/email/{address}")
 
-    @GetMapping("/users")
+    @GetMapping("/pets")
     @ResponseBody
-    public List<User> getUsers(
+    public List<Pet> getPets(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "sortBy", required = false) String sortBy,
@@ -86,7 +101,7 @@ public class UserController {
                 filters
         );
 
-        return userService.findAll(pageRequest);
+        return petService.findAll(pageRequest);
     }
 
     public Map<String, List<String>> decodeQueryParams(String queryString) {
@@ -103,45 +118,44 @@ public class UserController {
         return params;
     }
 
-    @PutMapping("/users/{id}")
-    public String updateUser(@PathVariable("id") String id, @RequestBody User updated) {
+    @PutMapping("/pets/{id}")
+    public String updatePet(@PathVariable("id") String id, @RequestBody Pet updated) {
         updated.setId(id);
-        userService.update(updated);
-        return "User updated with ID: " + id;
+        petService.update(updated);
+        return "Pet updated with ID: " + id;
     }
 
-    @PatchMapping("/users/{id}")
-    public String patchUser(@PathVariable("id") String id, @RequestBody User patch) {
-        Optional<User> existingOpt = userService.findById(id);
+    @PatchMapping("/pets/{id}")
+    public String patchPet(@PathVariable("id") String id, @RequestBody Pet patch) {
+        Optional<Pet> existingOpt = petService.findById(id);
         if (existingOpt.isEmpty()) {
-            return "User not found";
+            return "Pet not found";
         }
 
-        User existing = existingOpt.get();
+        Pet existing = existingOpt.get();
 
         // Manually merge fields — or use a helper method
+        if (patch.getPetname() != null) {
+            existing.setPetname(patch.getPetname());
+        }
         if (patch.getUsername() != null) {
             existing.setUsername(patch.getUsername());
         }
-        if (patch.getEmail() != null) {
-            existing.setEmail(patch.getEmail());
-        }
 
-        userService.update(existing);
-        return "User patched with ID: " + id;
+        petService.update(existing);
+        return "Pet patched with ID: " + id;
     }
 
-    @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable("id") String id) {
-        userService.deleteById(id);
-        return "User deleted with ID: " + id;
+    @DeleteMapping("/pets/{id}")
+    public String deletePet(@PathVariable("id") String id) {
+        petService.deleteById(id);
+        return "Pet deleted with ID: " + id;
     }
 
-    @DeleteMapping("/users")
-    public String deleteAllUsers() {
-        userService.deleteAll();
-        return "All users deleted";
+    @DeleteMapping("/pets")
+    public String deleteAllPets() {
+        petService.deleteAll();
+        return "All pets deleted";
     }
 
 }
-
